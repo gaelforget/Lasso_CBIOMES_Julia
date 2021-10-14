@@ -6,12 +6,16 @@ For CBIOMES Julia meeting discussion lead by [@jtsiddons](https://www.github.com
 
 ## Plan
 
+We look at using `Lasso.jl` and `GLMNet.jl` to perform penalised regression in Julia. I have created a quick dataset from the Narragansett Bay [NABATS.org](nabats.org), from which we will use environmental and meteorlogical variables to estimate surface salinity in the bay. I will start with a simple linear regression using `GLM.jl`.
+
 ### Introduction to Lasso Regression
 
-- What is Lasso Regression?
+- What is Lasso Regression? 1st order penalty on the regression coefficients.
 - How do coefficients change with $\lambda$ (plot)
 
-### Example from documentation
+### Ridge Regression
+
+2nd order penalty to the coefficients.
 
 ### Elastic Net
 
@@ -19,6 +23,4 @@ For CBIOMES Julia meeting discussion lead by [@jtsiddons](https://www.github.com
 
 ### $\lambda$ selection
 
-### More complicated example
-
-- Bird Parasites data from Clark et al. (2018)
+Use cross-validation using K-fold from `MLBase`.
