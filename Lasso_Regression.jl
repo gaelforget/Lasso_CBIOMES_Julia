@@ -171,9 +171,9 @@ $$\underset{\beta_0,\beta}{\text{argmin}}\left(\frac{1}{n}\|y - \beta_0 - \hat{X
 
 subject to
 
-$$\sum_{i=1}^p \beta_i = \|\beta\|_1 \leq t.$$
+$$\sum_{i=1}^p \beta_i = \|\beta\|_1 \leq t,$$
 
-Note that this sum is only for the non-intercept coefficients - the intercept is left unpenalised. This can be rewritten in *Lagrangian* form as
+for some $t>0$. Note that this sum is only for the non-intercept coefficients - the intercept is left unpenalised. This can be rewritten in *Lagrangian* form as
 
 $$\underset{\beta_0, \beta}{\text{argmin}}\left(\frac{1}{n}\|y - \beta_0 - \hat{X}\beta\|_2^2 + \lambda\|\beta\|_1\right).$$
 
