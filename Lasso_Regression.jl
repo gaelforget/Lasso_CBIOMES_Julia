@@ -15,7 +15,7 @@ end
 
 # ╔═╡ 8b6e08f0-520a-44fc-bf49-1503dd2016ed
  begin
-	using DataFrames, CSV # Data
+	using DataFrames, CSV, Downloads # Data
 	using GLM # Standard Regression
 	using Lasso, GLMNet # Penalised regression
 	using MLBase # Required for Lasso.jl cross-validation
@@ -49,7 +49,15 @@ I have created a small dataset from the historical Narragansett from [Nabats.org
 
 # ╔═╡ 580d6b3a-95c4-4296-8c1e-25e93a993477
 begin
-	file = "./Narragansett_Environmental.csv";
+	if isfile("./Narragansett_Environmental.csv")
+		file = "./Narragansett_Environmental.csv"
+	else
+		file=joinpath(tempdir(),"Narragansett_Environmental.csv")
+		url="https://raw.githubusercontent.com/jtsiddons/"*
+		"Lasso_CBIOMES_Julia/main/Narragansett_Environmental.csv"
+		!isfile(file) ? Downloads.download(url,file) : nothing
+	end
+		
 	df = CSV.File(file) |> DataFrame;
 	
 	# Standardise
@@ -80,7 +88,7 @@ hist(df.salinity_surface_psu,bins=25)
 
 # ╔═╡ f1a36f60-616b-4667-baad-16715d4622a6
 md"""
-If our model is $y\sim 1 + \hat{X}$, where $y$ is an $n$-dimensional response vector to predictors $\hat{X}$ which is an $n\times p$ matrix containing $p$ predictors, we are trying to find the arguments/coeficients $\beta = \left[\beta_1, ... \beta_p \right]$ and $\beta_0$ that minimises:
+If our model is $y\sim 1 + \hat{X}$, where $y$ is an $n$-dimensional response vector to predictors $\hat{X}$ which is an $n\times p$ matrix containing $p$ predictors, we are trying to find the arguments/coefficients $\beta = \left[\beta_1, ... \beta_p \right]$ and $\beta_0$ that minimize:
 
 $$\frac{1}{n}\|y - \beta_0 - \hat{X}\beta\|_2^2$$
 """
@@ -92,11 +100,12 @@ begin
 	for n in names(df)[2:end]
 		global modelstr *= " + " * uppercasefirst(replace(n,"_"=>" "))
 	end
+	modelstr
 end		
 
 # ╔═╡ 0ef97167-55f1-462f-9817-fe6a076136c7
 md"""
-This selection of data isn't necessarily appropriate for **linear** regression but it's a quick example and should hopefilly demonstrate penalised regression effectively.
+This selection of data isn't necessarily appropriate for **linear** regression but it's a quick example and should hopefully demonstrate penalised regression effectively.
 
 ## 1. Linear Regression
 
@@ -163,7 +172,7 @@ end
 md"""
 ## 2. Lasso Regression
 
-The aim of Lasso regression is to reduce the dimensionality of our regression. In that it only returns coeficients for predictors that are significant for the response. 
+The aim of Lasso regression is to reduce the dimensionality of our regression. In that it only returns coefficients for predictors that are significant for the response. 
 
 It does this by applying a 1-st order penalty constraint (1-norm) to the coeficients, we solve:
 
@@ -451,6 +460,7 @@ BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 GLMNet = "8d5ece8b-de18-5317-b113-243142960cc6"
 Lasso = "b4fcebef-c861-5a0f-a7e2-ba9dc32b180a"
@@ -556,9 +566,9 @@ version = "1.0.5"
 
 [[CairoMakie]]
 deps = ["Base64", "Cairo", "Colors", "FFTW", "FileIO", "FreeType", "GeometryBasics", "LinearAlgebra", "Makie", "SHA", "StaticArrays"]
-git-tree-sha1 = "8664989955daccc90002629aa80193e44893bb45"
+git-tree-sha1 = "774ff1cce3ae930af3948c120c15eeb96c886c33"
 uuid = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
-version = "0.6.5"
+version = "0.6.6"
 
 [[Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Pkg", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
@@ -568,9 +578,9 @@ version = "1.16.1+0"
 
 [[ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra", "SparseArrays"]
-git-tree-sha1 = "74e8234fb738c45e2af55fdbcd9bfbe00c2446fa"
+git-tree-sha1 = "8d954297bc51cc64f15937c2093799c3617b73e4"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-version = "1.8.0"
+version = "1.10.0"
 
 [[CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -617,12 +627,6 @@ version = "3.39.0"
 [[CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-
-[[ContextVariablesX]]
-deps = ["Compat", "Logging", "UUIDs"]
-git-tree-sha1 = "8ccaa8c655bc1b83d2da4d569c9b28254ababd6e"
-uuid = "6add18c4-b38d-439d-96f6-d6bc489c04c5"
-version = "0.1.2"
 
 [[Contour]]
 deps = ["StaticArrays"]
@@ -677,9 +681,9 @@ uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[Distributions]]
 deps = ["ChainRulesCore", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SparseArrays", "SpecialFunctions", "Statistics", "StatsBase", "StatsFuns"]
-git-tree-sha1 = "e13d3977b559f013b3729a029119162f84e93f5b"
+git-tree-sha1 = "9809cf6871ca006d5a4669136c09e77ba08bf51a"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
-version = "0.25.19"
+version = "0.25.20"
 
 [[DocStringExtensions]]
 deps = ["LibGit2"]
@@ -1081,9 +1085,9 @@ version = "0.8.0"
 
 [[Makie]]
 deps = ["Animations", "Base64", "ColorBrewer", "ColorSchemes", "ColorTypes", "Colors", "Contour", "Distributions", "DocStringExtensions", "FFMPEG", "FileIO", "FixedPointNumbers", "Formatting", "FreeType", "FreeTypeAbstraction", "GeometryBasics", "GridLayoutBase", "ImageIO", "IntervalSets", "Isoband", "KernelDensity", "LaTeXStrings", "LinearAlgebra", "MakieCore", "Markdown", "Match", "MathTeXEngine", "Observables", "Packing", "PlotUtils", "PolygonOps", "Printf", "Random", "RelocatableFolders", "Serialization", "Showoff", "SignedDistanceFields", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "StatsFuns", "StructArrays", "UnicodeFun"]
-git-tree-sha1 = "7e49f989e7c7f50fe55bd92d45329c9cf3f2583d"
+git-tree-sha1 = "56b0b7772676c499430dc8eb15cfab120c05a150"
 uuid = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
-version = "0.15.2"
+version = "0.15.3"
 
 [[MakieCore]]
 deps = ["Observables"]
@@ -1125,10 +1129,10 @@ version = "1.0.2"
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Mocking]]
-deps = ["Compat", "ContextVariablesX", "ExprTools"]
-git-tree-sha1 = "d5ca7901d59738132d6f9be9a18da50bc85c5115"
+deps = ["Compat", "ExprTools"]
+git-tree-sha1 = "29714d0a7a8083bba8427a4fbfb00a540c681ce7"
 uuid = "78c3b35d-d492-501b-9361-3d52fe80e533"
-version = "0.7.4"
+version = "0.7.3"
 
 [[MosaicViews]]
 deps = ["MappedArrays", "OffsetArrays", "PaddedViews", "StackViews"]
@@ -1141,9 +1145,9 @@ uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 
 [[MutableArithmetics]]
 deps = ["LinearAlgebra", "SparseArrays", "Test"]
-git-tree-sha1 = "372e3a76d969e651ca70eb647bf0e303bc95d615"
+git-tree-sha1 = "8d9496b2339095901106961f44718920732616bb"
 uuid = "d8a4904e-b15c-11e9-3269-09a3773c0cb0"
-version = "0.2.21"
+version = "0.2.22"
 
 [[NaNMath]]
 git-tree-sha1 = "bfe47e760d60b82b66b61d2d44128b62e3a369fb"
@@ -1481,9 +1485,9 @@ version = "1.0.0"
 
 [[StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
-git-tree-sha1 = "65fb73045d0e9aaa39ea9a29a5e7506d9ef6511f"
+git-tree-sha1 = "eb35dcc66558b2dda84079b9a1be17557d32091a"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.33.11"
+version = "0.33.12"
 
 [[StatsFuns]]
 deps = ["Rmath", "SpecialFunctions"]
