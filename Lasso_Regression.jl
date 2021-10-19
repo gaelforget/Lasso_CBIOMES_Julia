@@ -88,7 +88,7 @@ hist(df.salinity_surface_psu,bins=25)
 
 # ╔═╡ f1a36f60-616b-4667-baad-16715d4622a6
 md"""
-If our model is $y\sim 1 + \hat{X}$, where $y$ is an $n$-dimensional response vector to predictors $\hat{X}$ which is an $n\times p$ matrix containing $p$ predictors, we are trying to find the arguments/coeficients $\beta = \left[\beta_1, ... \beta_p \right]$ and $\beta_0$ that minimises:
+If our model is $y\sim 1 + \hat{X}$, where $y$ is an $n$-dimensional response vector to predictors $\hat{X}$ which is an $n\times p$ matrix containing $p$ predictors, we are trying to find the arguments/coefficients $\beta = \left[\beta_1, ... \beta_p \right]$ and $\beta_0$ that minimize:
 
 $$\frac{1}{n}\|y - \beta_0 - \hat{X}\beta\|_2^2$$
 """
@@ -100,11 +100,12 @@ begin
 	for n in names(df)[2:end]
 		global modelstr *= " + " * uppercasefirst(replace(n,"_"=>" "))
 	end
+	modelstr
 end		
 
 # ╔═╡ 0ef97167-55f1-462f-9817-fe6a076136c7
 md"""
-This selection of data isn't necessarily appropriate for **linear** regression but it's a quick example and should hopefilly demonstrate penalised regression effectively.
+This selection of data isn't necessarily appropriate for **linear** regression but it's a quick example and should hopefully demonstrate penalised regression effectively.
 
 ## 1. Linear Regression
 
@@ -171,7 +172,7 @@ end
 md"""
 ## 2. Lasso Regression
 
-The aim of Lasso regression is to reduce the dimensionality of our regression. In that it only returns coeficients for predictors that are significant for the response. 
+The aim of Lasso regression is to reduce the dimensionality of our regression. In that it only returns coefficients for predictors that are significant for the response. 
 
 It does this by applying a 1-st order penalty constraint (1-norm) to the coeficients, we solve:
 
